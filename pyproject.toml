@@ -1,0 +1,14 @@
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = ["setuptools", "setuptools-scm"]
+
+[project]
+dependencies = [
+  "pydantic",
+]
+description = "Experimental LSP"
+name = "experimental-lsp"
+version = "0.1.0"
+
+[project.scripts]
+lsp = "lsp:main"
