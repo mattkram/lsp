@@ -12,3 +12,7 @@ version = "0.1.0"
 
 [project.scripts]
 lsp = "lsp:main"
+
+[tool.pytest.ini_options]
+filterwarnings = ["error"]
+norecursedirs = ["env", "envs", ".tox"]
