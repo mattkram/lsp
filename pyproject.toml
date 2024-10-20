@@ -15,4 +15,4 @@ lsp = "lsp:main"
 
 [tool.pytest.ini_options]
 filterwarnings = ["error"]
-norecursedirs = ["env", "envs", ".tox"]
+norecursedirs = ["env"]
