@@ -1,18 +1,25 @@
 import subprocess
 import sys
+import tty
 
-p = subprocess.Popen(
+# Make the terminal send stdin after each character
+tty.setcbreak(sys.stdin.fileno())
+
+# Run the LSP in a subprocess
+process = subprocess.Popen(
     ["lsp"],
     stdin=subprocess.PIPE,
     text=True,
 )
 
+# Here, we read each character the user types and send it to the
+# LSP subprocess
 while True:
     # Wait for input from the user
-    line = sys.stdin.readline()
+    char = sys.stdin.read(1)
 
     # Write the user input to the subprocess
-    p.stdin.write(line)
-    p.stdin.flush()
+    process.stdin.write(char)
+    process.stdin.flush()
 
-p.wakt()
+process.wait()

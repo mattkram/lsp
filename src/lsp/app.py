@@ -4,14 +4,10 @@ import sys
 def main() -> int:
     print("Starting up!")
     while True:
-        # Prompt for input
-        sys.stdout.write(">>> ")
-        sys.stdout.flush()
+        # Read a single character
+        char = sys.stdin.read(1)
 
-        # Wait for input from the user
-        line = sys.stdin.readline()
-        if line:
-            # Echo back
-            sys.stdout.write(line.strip() + "\r\n")
-            sys.stdout.flush()
+        # Echo back (looks like typing)
+        sys.stdout.write(f"LSP got: {char}\n")
+        sys.stdout.flush()
     return 0
