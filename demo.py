@@ -2,8 +2,8 @@ import subprocess
 import sys
 
 p = subprocess.Popen(
-    ["lsp"], 
-    stdin=subprocess.PIPE, 
+    ["lsp"],
+    stdin=subprocess.PIPE,
     text=True,
 )
 

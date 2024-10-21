@@ -15,7 +15,7 @@ def decode_message(message: str) -> BaseMessage:
     if not sep:
         raise ValueError("Did not find separator")
 
-    content_length = int(header[len("Content-Length: "):])
+    content_length = int(header[len("Content-Length: ") :])
 
     content = content[:content_length]
     model = BaseMessage.model_validate_json(content)

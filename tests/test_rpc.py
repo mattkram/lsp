@@ -16,7 +16,7 @@ def test_encode_message():
 
 def test_decode_message():
     message = 'Content-Length: 15\r\n\r\n{"method":"hi"}'
-    method, content= decode_message(message)
+    method, content = decode_message(message)
     content_length = len(content)
     assert content_length == 15
     assert method == "hi"

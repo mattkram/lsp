@@ -4,7 +4,7 @@ requires = ["setuptools", "setuptools-scm"]
 
 [project]
 dependencies = [
-  "pydantic",
+  "pydantic"
 ]
 description = "Experimental LSP"
 name = "experimental-lsp"
