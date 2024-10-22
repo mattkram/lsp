@@ -1,7 +1,22 @@
 import io
+import logging
 import os
 import sys
+from pathlib import Path
 from typing import Iterator
+
+FORMAT = "[%(asctime)s,%(msecs)d] %(name)s [%(levelname)s] %(message)s"
+LOG_FILENAME = Path("log.txt")
+LOG_LEVEL = logging.DEBUG
+
+logging.basicConfig(
+    filename=LOG_FILENAME,
+    filemode="w",
+    format=FORMAT,
+    datefmt="%H:%M:%S",
+    level=LOG_LEVEL,
+)
+log = logging.getLogger("lsp")
 
 
 class Stream:
@@ -75,9 +90,8 @@ def messagizer(stream) -> Iterator[str]:
 
 
 def main() -> int:
-    print("Starting up!")
+    log.info("Starting up!")
     stream = Stream(sys.stdin)
     for msg in messagizer(stream):
-        sys.stdout.write(f"{msg=}\n")
-        sys.stdout.flush()
+        log.info("msg=%s", msg)
     return 0
