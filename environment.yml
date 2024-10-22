@@ -1,0 +1,10 @@
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  # renovate: datasource=conda depName=main/python
+  - python=3.12.6
+  # renovate: datasource=conda depName=main/pip
+  - pip=24.2
+  - pip:
+      - "-e ."
