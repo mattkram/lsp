@@ -9,14 +9,13 @@ tty.setcbreak(sys.stdin.fileno())
 process = subprocess.Popen(
     ["lsp"],
     stdin=subprocess.PIPE,
-    text=True,
 )
 
 # Here, we read each character the user types and send it to the
 # LSP subprocess
 while True:
     # Wait for input from the user
-    char = sys.stdin.read(1)
+    char = sys.stdin.buffer.read(1)
 
     # Write the user input to the subprocess
     process.stdin.write(char)

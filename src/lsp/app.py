@@ -6,51 +6,51 @@ import sys
 class Stream:
     def __init__(self, fileobj):
         self.fileobj = fileobj
-        self.buffer = io.StringIO()
+        self.buffer = io.BytesIO()
 
-    def _reset_buffer(self):
-        self.buffer = io.StringIO()
+    def _reset_buffer(self) -> None:
+        self.buffer = io.BytesIO()
 
-    def _append_to_buffer(self, contents: str):
+    def _append_to_buffer(self, contents: bytes) -> None:
         old_pos = self.buffer.tell()
         self.buffer.seek(0, os.SEEK_END)
         self.buffer.write(contents)
         self.buffer.seek(old_pos)
 
-    def _buffered(self):
+    def _buffered(self) -> bytes:
         old_pos = self.buffer.tell()
         data = self.buffer.read()
         self.buffer.seek(old_pos)
         return data
 
-    def peek(self, size: int):
+    def peek(self, size: int) -> bytes:
         buf = self._buffered()[:size]
         if len(buf) < size:
-            contents = self.fileobj.read(size - len(buf))
+            contents = self.fileobj.buffer.read(size - len(buf))
             self._append_to_buffer(contents)
             return self._buffered()
         return buf
 
-    def read(self, size=None):
+    def read(self, size: int | None = None) -> bytes:
         if size is None:
-            contents = self.buffer.read() + self.fileobj.read()
+            contents = self.buffer.read() + self.fileobj.buffer.read()
             self._reset_buffer()
             return contents
 
         contents = self.buffer.read(size)
         if len(contents) < size:
-            contents += self.fileobj.read(size - len(contents))
+            contents += self.fileobj.buffer.read(size - len(contents))
             self._reset_buffer()
         return contents
 
-    def readline(self):
+    def readline(self) -> bytes:
         line = self.buffer.readline()
-        if not line.endswith("\n"):
-            line += self.fileobj.readline()
+        if not line.endswith(b"\n"):
+            line += self.fileobj.buffer.readline()
             self._reset_buffer()
         return line
 
-    def close(self):
+    def close(self) -> None:
         self.buffer = None
         self.fileobj = None
 
@@ -60,7 +60,7 @@ def main() -> int:
     stream = Stream(sys.stdin)
     while True:
         # Read a single character
-        sys.stdout.write(f"Peeked:  {stream.peek(1)}\n")
+        sys.stdout.buffer.write(f"Peeked:  {stream.peek(1)}\n".encode("utf-8"))
         sys.stdout.write(f"Peeked:  {stream.peek(1)}\n")
         char = stream.read(1)
 
