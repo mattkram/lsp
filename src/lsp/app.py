@@ -1,6 +1,7 @@
 import io
 import os
 import sys
+from typing import Iterator
 
 
 class Stream:
@@ -55,16 +56,28 @@ class Stream:
         self.fileobj = None
 
 
+def messagizer(stream) -> Iterator[str]:
+    buf = b""
+    while True:
+        # Read a single character into the buffer
+        buf += stream.read(1)
+
+        header, sep, msg = buf.partition(b"\r\n\r\n")
+
+        if not sep:
+            continue  # not a message
+
+        _, content_length = header.split()
+        content_length = int(content_length)
+        msg = stream.read(content_length)
+        yield msg
+        buf = b""
+
+
 def main() -> int:
     print("Starting up!")
     stream = Stream(sys.stdin)
-    while True:
-        # Read a single character
-        sys.stdout.buffer.write(f"Peeked:  {stream.peek(1)}\n".encode("utf-8"))
-        sys.stdout.write(f"Peeked:  {stream.peek(1)}\n")
-        char = stream.read(1)
-
-        # Echo back (looks like typing)
-        sys.stdout.write(f"LSP got: {char}\n")
+    for msg in messagizer(stream):
+        sys.stdout.write(f"{msg=}\n")
         sys.stdout.flush()
     return 0

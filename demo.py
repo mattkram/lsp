@@ -11,14 +11,19 @@ process = subprocess.Popen(
     stdin=subprocess.PIPE,
 )
 
-# Here, we read each character the user types and send it to the
-# LSP subprocess
-while True:
-    # Wait for input from the user
-    char = sys.stdin.buffer.read(1)
+process.stdin.write(b'Content-Length 17\r\n\r\n{"hello":"world"}')
+process.stdin.flush()
+process.stdin.write(b'Content-Length 16\r\n\r\n{"hello":"matt"}')
+process.stdin.flush()
 
-    # Write the user input to the subprocess
-    process.stdin.write(char)
-    process.stdin.flush()
+# # Here, we read each character the user types and send it to the
+# # LSP subprocess
+# while True:
+#     # Wait for input from the user
+#     char = sys.stdin.buffer.read(1)
+#
+#     # Write the user input to the subprocess
+#     process.stdin.write(char)
+#     process.stdin.flush()
 
 process.wait()
