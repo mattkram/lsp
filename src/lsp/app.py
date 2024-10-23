@@ -1,25 +1,10 @@
 import io
-import logging
 import os
 import sys
-from pathlib import Path
 from typing import Iterator
 
 from lsp import rpc, schema
-
-
-FORMAT = "[%(asctime)s,%(msecs)d] %(name)s [%(levelname)s] %(message)s"
-LOG_FILENAME = Path("log.txt")
-LOG_LEVEL = logging.DEBUG
-
-logging.basicConfig(
-    filename=LOG_FILENAME,
-    filemode="w",
-    format=FORMAT,
-    datefmt="%H:%M:%S",
-    level=LOG_LEVEL,
-)
-log = logging.getLogger("lsp")
+from lsp.logger import log
 
 
 class Stream:
