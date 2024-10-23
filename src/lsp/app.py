@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 from typing import Iterator
 
-from lsp import rpc
+from lsp import rpc, schema
 
 
 FORMAT = "[%(asctime)s,%(msecs)d] %(name)s [%(levelname)s] %(message)s"
@@ -92,9 +92,15 @@ class Stream:
 
 
 def handle_message(msg: bytes) -> None:
-    log.info("msg=%s", msg)
     method, content = rpc.decode_message(msg)
     log.info("Received message with method: %s", method)
+    if method == "initialize":
+        request = schema.InitializeRequest.model_validate_json(content)
+        log.info(
+            "Connected to: %s %s",
+            request.params.client_info.name,
+            request.params.client_info.version,
+        )
 
 
 def main() -> int:
