@@ -10,12 +10,12 @@ class Message(BaseModel):
 
 def test_encode_message():
     actual = encode_message(Message(field="hello"))
-    expected = 'Content-Length: 17\r\n\r\n{"field":"hello"}'
+    expected = b'Content-Length: 17\r\n\r\n{"field":"hello"}'
     assert actual == expected
 
 
 def test_decode_message():
-    message = 'Content-Length: 15\r\n\r\n{"method":"hi"}'
+    message = b'Content-Length: 15\r\n\r\n{"method":"hi"}'
     method, content = decode_message(message)
     content_length = len(content)
     assert content_length == 15
@@ -24,4 +24,4 @@ def test_decode_message():
 
 def test_decode_message_raises_on_missing_separator():
     with pytest.raises(ValueError):
-        decode_message("")
+        decode_message(b"")

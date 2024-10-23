@@ -11,9 +11,13 @@ process = subprocess.Popen(
     stdin=subprocess.PIPE,
 )
 
-process.stdin.write(b'Content-Length 17\r\n\r\n{"hello":"world"}')
+process.stdin.write(
+    b'Content-Length: 41\r\n\r\n{"method": "initialize", "hello":"world"}'
+)
 process.stdin.flush()
-process.stdin.write(b'Content-Length 16\r\n\r\n{"hello":"matt"}')
+process.stdin.write(
+    b'Content-Length: 40\r\n\r\n{"method": "initialize", "hello":"matt"}'
+)
 process.stdin.flush()
 
 # # Here, we read each character the user types and send it to the

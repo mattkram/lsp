@@ -5,6 +5,9 @@ import sys
 from pathlib import Path
 from typing import Iterator
 
+from lsp import rpc
+
+
 FORMAT = "[%(asctime)s,%(msecs)d] %(name)s [%(levelname)s] %(message)s"
 LOG_FILENAME = Path("log.txt")
 LOG_LEVEL = logging.DEBUG
@@ -90,6 +93,8 @@ class Stream:
 
 def handle_message(msg: bytes) -> None:
     log.info("msg=%s", msg)
+    method, content = rpc.decode_message(msg)
+    log.info("Received message with method: %s", method)
 
 
 def main() -> int:
