@@ -6,7 +6,7 @@ class BaseMessage(BaseModel):
 
 
 def encode_message(message: BaseMessage) -> bytes:
-    content = message.model_dump_json(by_alias=True)
+    content = message.model_dump_json()
     return f"Content-Length: {len(content)}\r\n\r\n{content}".encode("utf-8")
 
 

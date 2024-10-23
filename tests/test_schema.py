@@ -18,7 +18,7 @@ def test_initalize_response():
     }
     content = json.dumps(data).encode("utf-8")
     model = schema.InitializeResponse.model_validate_json(content)
-    assert model.model_dump(by_alias=True) == data
+    assert model.model_dump() == data
 
     message = rpc.encode_message(model)
 

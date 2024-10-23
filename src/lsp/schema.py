@@ -1,9 +1,19 @@
+from typing import Any
+
 from pydantic import BaseModel as _BaseModel, ConfigDict
 from pydantic.alias_generators import to_camel
 
 
 class BaseModel(_BaseModel):
     model_config = ConfigDict(alias_generator=to_camel)
+
+    def model_dump(self, **kwargs) -> dict[str, Any]:
+        by_alias = kwargs.pop("by_alias", True)
+        return super().model_dump(by_alias=by_alias, **kwargs)
+
+    def model_dump_json(self, **kwargs) -> str:
+        by_alias = kwargs.pop("by_alias", True)
+        return super().model_dump_json(by_alias=by_alias, **kwargs)
 
 
 class Request(BaseModel):
