@@ -1,4 +1,9 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel as _BaseModel, ConfigDict
+from pydantic.alias_generators import to_camel
+
+
+class BaseModel(_BaseModel):
+    model_config = ConfigDict(alias_generator=to_camel)
 
 
 class Request(BaseModel):
@@ -28,7 +33,7 @@ class ClientInfo(BaseModel):
 
 
 class InitializeRequestParams(BaseModel):
-    client_info: ClientInfo | None = Field(default=None, alias="clientInfo")
+    client_info: ClientInfo | None = None
     # There's tons more that goes here
 
 
@@ -46,7 +51,7 @@ class ServerInfo(BaseModel):
 
 class InitializeResult(BaseModel):
     capabilities: ServerCapabilities
-    server_info: ServerInfo = Field(alias="serverInfo")
+    server_info: ServerInfo
 
 
 class InitializeResponse(Response):
