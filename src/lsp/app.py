@@ -88,9 +88,13 @@ class Stream:
             buf = b""
 
 
+def handle_message(msg: bytes) -> None:
+    log.info("msg=%s", msg)
+
+
 def main() -> int:
     log.info("Starting up!")
     stream = Stream(sys.stdin)
     for msg in stream.messages():
-        log.info("msg=%s", msg)
+        handle_message(msg)
     return 0
