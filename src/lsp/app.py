@@ -71,21 +71,21 @@ class Stream:
         self.fileobj = None
 
     def messages(self) -> Iterator[str]:
-        buf = b""
+        msg = b""
         while True:
             # Read a single character into the buffer
-            buf += self.read(1)
+            msg += self.read(1)
 
-            header, sep, msg = buf.partition(b"\r\n\r\n")
+            header, sep, _ = msg.partition(b"\r\n\r\n")
 
             if not sep:
                 continue  # not a message
 
             _, content_length = header.split()
             content_length = int(content_length)
-            msg = self.read(content_length)
+            msg += self.read(content_length)
             yield msg
-            buf = b""
+            msg = b""
 
 
 def handle_message(msg: bytes) -> None:
