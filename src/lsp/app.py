@@ -94,6 +94,7 @@ class Stream:
 def handle_message(msg: bytes) -> None:
     method, content = rpc.decode_message(msg)
     log.info("Received message with method: %s", method)
+    log.debug("msg=%s", msg)
     if method == "initialize":
         request = schema.InitializeRequest.model_validate_json(content)
         log.info(
@@ -113,6 +114,7 @@ def handle_message(msg: bytes) -> None:
             ),
         )
         msg = rpc.encode_message(response)
+        log.debug("msg=%s", msg)
         sys.stdout.buffer.write(msg)
         sys.stdout.flush()
 
