@@ -101,6 +101,20 @@ def handle_message(msg: bytes) -> None:
             request.params.client_info.name,
             request.params.client_info.version,
         )
+        response = schema.InitializeResponse(
+            jsonrpc="2.0",
+            id=request.id,
+            result=schema.InitializeResult(
+                capabilities=schema.ServerCapabilities(),
+                serverInfo=schema.ServerInfo(
+                    name="kramer-lsp",
+                    version="0.0.0.0.0.alpha1",
+                ),
+            ),
+        )
+        msg = rpc.encode_message(response)
+        sys.stdout.buffer.write(msg)
+        sys.stdout.flush()
 
 
 def main() -> int:

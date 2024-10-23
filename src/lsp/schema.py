@@ -34,3 +34,20 @@ class InitializeRequestParams(BaseModel):
 
 class InitializeRequest(Request):
     params: InitializeRequestParams
+
+
+class ServerCapabilities(BaseModel): ...
+
+
+class ServerInfo(BaseModel):
+    name: str
+    version: str
+
+
+class InitializeResult(BaseModel):
+    capabilities: ServerCapabilities
+    server_info: ServerInfo = Field(alias="serverInfo")
+
+
+class InitializeResponse(Response):
+    result: InitializeResult
