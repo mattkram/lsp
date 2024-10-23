@@ -70,28 +70,27 @@ class Stream:
         self.buffer = None
         self.fileobj = None
 
-
-def messagizer(stream) -> Iterator[str]:
-    buf = b""
-    while True:
-        # Read a single character into the buffer
-        buf += stream.read(1)
-
-        header, sep, msg = buf.partition(b"\r\n\r\n")
-
-        if not sep:
-            continue  # not a message
-
-        _, content_length = header.split()
-        content_length = int(content_length)
-        msg = stream.read(content_length)
-        yield msg
+    def messages(self) -> Iterator[str]:
         buf = b""
+        while True:
+            # Read a single character into the buffer
+            buf += self.read(1)
+
+            header, sep, msg = buf.partition(b"\r\n\r\n")
+
+            if not sep:
+                continue  # not a message
+
+            _, content_length = header.split()
+            content_length = int(content_length)
+            msg = self.read(content_length)
+            yield msg
+            buf = b""
 
 
 def main() -> int:
     log.info("Starting up!")
     stream = Stream(sys.stdin)
-    for msg in messagizer(stream):
+    for msg in stream.messages():
         log.info("msg=%s", msg)
     return 0
