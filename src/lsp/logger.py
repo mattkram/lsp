@@ -1,8 +1,11 @@
 import logging
 from pathlib import Path
 
+HERE = Path(__file__).parent.resolve()
+REPO_DIR = HERE.parents[1]
+
 FORMAT = "[%(asctime)s,%(msecs)d] %(name)s [%(levelname)s] %(message)s"
-LOG_FILENAME = Path("log.txt")
+LOG_FILENAME = REPO_DIR / "log.txt"
 LOG_LEVEL = logging.DEBUG
 
 logging.basicConfig(
