@@ -88,7 +88,6 @@ def handle_message(msg: bytes) -> None:
             request.params.client_info.version,
         )
         response = schema.InitializeResponse(
-            jsonrpc="2.0",
             id=request.id,
             result=schema.InitializeResult(
                 capabilities=schema.ServerCapabilities(),

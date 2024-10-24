@@ -16,23 +16,25 @@ class BaseModel(_BaseModel):
         return super().model_dump_json(by_alias=by_alias, **kwargs)
 
 
-class Request(BaseModel):
-    jsonrpc: str
+class Message(BaseModel):
+    jsonrpc: str = "2.0"
+
+
+class Request(Message):
     id: int
     method: str
 
     # Params
 
 
-class Response(BaseModel):
-    jsonrpc: str
+class Response(Message):
     id: int | None = None
 
     # Result
     # Error
 
 
-class Notification(BaseModel):
+class Notification(Message):
     jsonrpc: str
     method: str
 
