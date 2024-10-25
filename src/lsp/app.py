@@ -88,7 +88,7 @@ def handle_message(msg: bytes) -> None:
             id=request.id,
             result=schema.InitializeResult(
                 capabilities=schema.ServerCapabilities(),
-                serverInfo=schema.ServerInfo(
+                server_info=schema.ServerInfo(
                     name="kramer-lsp",
                     version="0.0.0.0.0.alpha1",
                 ),

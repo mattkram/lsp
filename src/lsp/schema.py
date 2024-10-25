@@ -5,7 +5,7 @@ from pydantic.alias_generators import to_camel
 
 
 class BaseModel(_BaseModel):
-    model_config = ConfigDict(alias_generator=to_camel)
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
 
     def model_dump(self, **kwargs: Any) -> dict[str, Any]:
         by_alias = kwargs.pop("by_alias", True)
