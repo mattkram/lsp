@@ -78,11 +78,12 @@ def handle_message(msg: bytes) -> None:
     log.debug("msg=%s", msg)
     if method == "initialize":
         request = schema.InitializeRequest.model_validate_json(content)
-        log.info(
-            "Connected to: %s %s",
-            request.params.client_info.name,
-            request.params.client_info.version,
-        )
+        if client_info := request.params.client_info:
+            log.info(
+                "Connected to: %s %s",
+                client_info.name,
+                client_info.version,
+            )
         response = schema.InitializeResponse(
             id=request.id,
             result=schema.InitializeResult(
