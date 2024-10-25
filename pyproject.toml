@@ -10,8 +10,22 @@ description = "Experimental LSP"
 name = "experimental-lsp"
 version = "0.1.0"
 
+[project.optional-dependencies]
+dev = [
+  "mypy",
+  "pytest"
+]
+
 [project.scripts]
 lsp = "lsp:main"
+
+[tool.mypy]
+disallow_untyped_defs = true
+exclude = ["env"]
+files = [
+  "src/**/*.py"
+]
+python_version = "3.11"
 
 [tool.pytest.ini_options]
 filterwarnings = ["error"]

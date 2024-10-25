@@ -17,6 +17,10 @@ repos:
     hooks:
       - id: pretty-format-toml
         args: [--autofix]
+  - repo: https://github.com/anaconda/pre-commit-hooks
+    rev: v24.5.2
+    hooks:
+    - id: generate-renovate-annotations
   - repo: meta
     hooks:
       - id: check-hooks-apply
