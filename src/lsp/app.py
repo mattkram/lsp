@@ -1,14 +1,14 @@
 import io
 import os
 import sys
-from typing import Iterator
+from typing import Iterator, TextIO
 
 from lsp import rpc, schema
 from lsp.logger import log
 
 
 class Stream:
-    def __init__(self, fileobj):
+    def __init__(self, fileobj: TextIO):
         self.fileobj = fileobj
         self.buffer = io.BytesIO()
 
@@ -54,11 +54,7 @@ class Stream:
             self._reset_buffer()
         return line
 
-    def close(self) -> None:
-        self.buffer = None
-        self.fileobj = None
-
-    def messages(self) -> Iterator[str]:
+    def messages(self) -> Iterator[bytes]:
         msg = b""
         while True:
             # Read a single character into the buffer
@@ -69,8 +65,8 @@ class Stream:
             if not sep:
                 continue  # not a message
 
-            _, content_length = header.split()
-            content_length = int(content_length)
+            _, content_length_str = header.split()
+            content_length = int(content_length_str)
             msg += self.read(content_length)
             yield msg
             msg = b""
