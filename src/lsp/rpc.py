@@ -1,11 +1,7 @@
-from pydantic import BaseModel
+from lsp.schema import Message, ReceivedMessage
 
 
-class BaseMessage(BaseModel):
-    method: str
-
-
-def encode_message(message: BaseMessage) -> bytes:
+def encode_message(message: Message) -> bytes:
     content = message.model_dump_json()
     return f"Content-Length: {len(content)}\r\n\r\n{content}".encode("utf-8")
 
@@ -18,5 +14,5 @@ def decode_message(message: bytes) -> tuple[str, bytes]:
     content_length = int(header[len("Content-Length: ") :])
 
     content = content[:content_length]
-    model = BaseMessage.model_validate_json(content.decode("utf-8"))
+    model = ReceivedMessage.model_validate_json(content.decode("utf-8"))
     return model.method, content

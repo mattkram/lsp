@@ -20,20 +20,21 @@ class Message(BaseModel):
     jsonrpc: str = "2.0"
 
 
-class Request(Message):
-    id: int | str
+class ReceivedMessage(Message):
     method: str
+
+
+class Request(ReceivedMessage):
+    id: int | str
 
     # TODO: Params
 
 
-class Notification(Message):
-    jsonrpc: str
-    method: str
+class Notification(ReceivedMessage): ...
 
 
 class Response(Message):
-    id: int | None = None
+    id: int | str | None = None
 
     # Result
     # Error
