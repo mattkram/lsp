@@ -43,7 +43,11 @@ class Stream:
 
         contents = self.buffer.read(size)
         if len(contents) < size:
-            contents += self.fileobj.buffer.read(size - len(contents))
+            new_bytes = self.fileobj.buffer.read(size - len(contents))
+            if not new_bytes:
+                log.info("Shutting down")
+                raise SystemExit()
+            contents += new_bytes
             self._reset_buffer()
         return contents
 
