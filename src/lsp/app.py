@@ -25,20 +25,6 @@ class Stream:
         self.buffer.write(contents)
         self.buffer.seek(old_pos)
 
-    def _buffered(self) -> bytes:
-        old_pos = self.buffer.tell()
-        data = self.buffer.read()
-        self.buffer.seek(old_pos)
-        return data
-
-    def peek(self, size: int) -> bytes:
-        buf = self._buffered()[:size]
-        if len(buf) < size:
-            contents = self.fileobj.buffer.read(size - len(buf))
-            self._append_to_buffer(contents)
-            return self._buffered()
-        return buf
-
     def read(self, size: int | None = None) -> bytes:
         if size is None:
             contents = self.buffer.read() + self.fileobj.buffer.read()
@@ -53,13 +39,6 @@ class Stream:
             contents += new_bytes
             self._reset_buffer()
         return contents
-
-    def readline(self) -> bytes:
-        line = self.buffer.readline()
-        if not line.endswith(b"\n"):
-            line += self.fileobj.buffer.readline()
-            self._reset_buffer()
-        return line
 
     def messages(self) -> Iterator[bytes]:
         msg = b""
