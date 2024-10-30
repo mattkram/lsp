@@ -7,6 +7,10 @@ from lsp import rpc, schema
 from lsp.logger import log
 
 
+class InputStreamClosed(Exception):
+    pass
+
+
 class Stream:
     def __init__(self, fileobj: TextIO):
         self.fileobj = fileobj
@@ -45,8 +49,7 @@ class Stream:
         if len(contents) < size:
             new_bytes = self.fileobj.buffer.read(size - len(contents))
             if not new_bytes:
-                log.info("Shutting down")
-                raise SystemExit()
+                raise InputStreamClosed()
             contents += new_bytes
             self._reset_buffer()
         return contents
@@ -107,6 +110,9 @@ def handle_message(msg: bytes) -> None:
 def main() -> int:
     log.info("Starting up!")
     stream = Stream(sys.stdin)
-    for msg in stream.messages():
-        handle_message(msg)
+    try:
+        for msg in stream.messages():
+            handle_message(msg)
+    except InputStreamClosed:
+        log.info("Shutting down")
     return 0
