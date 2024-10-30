@@ -80,10 +80,15 @@ def handle_message(msg: bytes) -> None:
                 ),
             ),
         )
-        msg = rpc.encode_message(response)
-        log.debug("msg=%s", msg)
-        sys.stdout.buffer.write(msg)
-        sys.stdout.flush()
+        send_response(response)
+
+
+def send_response(response: schema.Response) -> None:
+    """Send an encoded response back to the editor."""
+    msg = rpc.encode_message(response)
+    log.debug("msg=%s", msg)
+    sys.stdout.buffer.write(msg)
+    sys.stdout.flush()
 
 
 def main() -> int:
