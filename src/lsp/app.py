@@ -35,6 +35,7 @@ class Stream:
         if len(contents) < size:
             new_bytes = self.fileobj.buffer.read(size - len(contents))
             if not new_bytes:
+                log.debug("Found no bytes in stdin, which means the buffer is closed")
                 raise InputStreamClosed()
             contents += new_bytes
             self._reset_buffer()
