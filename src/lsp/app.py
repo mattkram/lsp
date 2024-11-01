@@ -27,18 +27,13 @@ class Stream:
 
     def read(self, size: int | None = None) -> bytes:
         if size is None:
-            contents = self.buffer.read() + self.fileobj.buffer.read()
-            self._reset_buffer()
-            return contents
+            # Read the whole stream
+            return self.fileobj.buffer.read()
 
-        contents = self.buffer.read(size)
-        if len(contents) < size:
-            new_bytes = self.fileobj.buffer.read(size - len(contents))
-            if not new_bytes:
-                log.debug("Found no bytes in stdin, which means the buffer is closed")
-                raise InputStreamClosed()
-            contents += new_bytes
-            self._reset_buffer()
+        contents = self.fileobj.buffer.read(size)
+        if not contents:
+            log.debug("Found no bytes in stdin, which means the buffer is closed")
+            raise InputStreamClosed()
         return contents
 
     def messages(self) -> Iterator[bytes]:
