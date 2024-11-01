@@ -33,7 +33,7 @@ class Stream:
         self._buffer.write(contents)
         self._buffer.seek(old_pos)
 
-    def _read_into_buffer(self, size: int | None = None) -> None:
+    def _read_into_buffer(self, size: int) -> None:
         contents = self.fileobj.buffer.read(size)
         if not contents:
             log.debug("Found no bytes in stdin, which means the buffer is closed")
