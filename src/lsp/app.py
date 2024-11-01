@@ -26,10 +26,6 @@ class Stream:
         self.buffer.seek(old_pos)
 
     def read(self, size: int | None = None) -> bytes:
-        if size is None:
-            # Read the whole stream
-            return self.fileobj.buffer.read()
-
         contents = self.fileobj.buffer.read(size)
         if not contents:
             log.debug("Found no bytes in stdin, which means the buffer is closed")
