@@ -82,6 +82,9 @@ def handle_message(msg: bytes) -> None:
             ),
         )
         send_response(response)
+    elif method == "shutdown":
+        log.info("Shutting down")
+        raise SystemExit()
 
 
 def send_response(response: schema.Response) -> None:
@@ -98,6 +101,6 @@ def main() -> int:
     try:
         for msg in stream.messages():
             handle_message(msg)
-    except InputStreamClosed:
-        log.info("Shutting down")
+    except (SystemExit, InputStreamClosed):
+        pass
     return 0
