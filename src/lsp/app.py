@@ -14,40 +14,47 @@ class InputStreamClosed(Exception):
 class Stream:
     def __init__(self, fileobj: TextIO):
         self.fileobj = fileobj
-        self.buffer = io.BytesIO()
+        self._buffer = io.BytesIO()
+
+    @property
+    def buffer_contents(self) -> bytes:
+        """The contents of the buffer as bytes."""
+        old_pos = self._buffer.tell()
+        data = self._buffer.read()
+        self._buffer.seek(old_pos)
+        return data
 
     def _reset_buffer(self) -> None:
-        self.buffer = io.BytesIO()
+        self._buffer = io.BytesIO()
 
     def _append_to_buffer(self, contents: bytes) -> None:
-        old_pos = self.buffer.tell()
-        self.buffer.seek(0, os.SEEK_END)
-        self.buffer.write(contents)
-        self.buffer.seek(old_pos)
+        old_pos = self._buffer.tell()
+        self._buffer.seek(0, os.SEEK_END)
+        self._buffer.write(contents)
+        self._buffer.seek(old_pos)
 
-    def read(self, size: int | None = None) -> bytes:
+    def _read_into_buffer(self, size: int | None = None) -> None:
         contents = self.fileobj.buffer.read(size)
         if not contents:
             log.debug("Found no bytes in stdin, which means the buffer is closed")
             raise InputStreamClosed()
-        return contents
+        self._append_to_buffer(contents)
 
     def messages(self) -> Iterator[bytes]:
-        msg = b""
         while True:
             # Read a single character into the buffer
-            msg += self.read(1)
+            self._read_into_buffer(1)
 
-            header, sep, _ = msg.partition(b"\r\n\r\n")
+            header, sep, _ = self.buffer_contents.partition(b"\r\n\r\n")
 
             if not sep:
                 continue  # not a message
 
             _, content_length_str = header.split()
             content_length = int(content_length_str)
-            msg += self.read(content_length)
-            yield msg
-            msg = b""
+            self._read_into_buffer(content_length)
+            yield self.buffer_contents
+            self._reset_buffer()
 
 
 def handle_message(msg: bytes) -> None:
