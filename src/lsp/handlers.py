@@ -12,7 +12,7 @@ HandlerFunc = Callable[[bytes], schema.Response | None]
 _handlers: dict[MethodName, HandlerFunc] = {}
 
 
-def register(name: MethodName):
+def register(name: MethodName) -> Callable[[HandlerFunc], HandlerFunc]:
     def decorator(f: HandlerFunc) -> HandlerFunc:
         _handlers[name] = f
         return f
