@@ -3,11 +3,9 @@ from typing import Callable
 
 from lsp import rpc, schema
 from lsp.logger import log
+from lsp.types import HandlerFunc, MethodName
 
 __all__ = ["handle_message"]
-
-MethodName = str
-HandlerFunc = Callable[[bytes], schema.Response | None]
 
 
 class LspApp:
