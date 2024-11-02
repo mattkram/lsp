@@ -1,5 +1,5 @@
 import sys
-from typing import Callable
+from typing import Callable, Iterator
 
 from lsp import rpc, schema
 from lsp.logger import log
@@ -12,6 +12,7 @@ class LspApp:
 
     def __init__(self) -> None:
         self._handlers = {}
+        self._input_stream = Stream(sys.stdin)
 
     def register(self, name: MethodName) -> Callable[[HandlerFunc], HandlerFunc]:
         """Register a handler function for a given method."""
@@ -21,6 +22,9 @@ class LspApp:
             return f
 
         return decorator
+
+    def _receive_messages(self) -> Iterator[bytes]:
+        yield from self._input_stream.messages()
 
     @staticmethod
     def _send_response(response: schema.Response) -> None:
@@ -42,9 +46,8 @@ class LspApp:
 
     def run(self) -> int:
         log.info("Starting up!")
-        stream = Stream(sys.stdin)
         try:
-            for msg in stream.messages():
+            for msg in self._receive_messages():
                 app._handle_message(msg)
         except (SystemExit, InputStreamClosed):
             pass
