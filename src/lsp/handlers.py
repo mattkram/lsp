@@ -14,6 +14,8 @@ class LspApp:
         self._handlers = {}
 
     def register(self, name: MethodName) -> Callable[[HandlerFunc], HandlerFunc]:
+        """Register a handler function for a given method."""
+
         def decorator(f: HandlerFunc) -> HandlerFunc:
             self._handlers[name] = f
             return f
@@ -29,6 +31,7 @@ class LspApp:
         sys.stdout.flush()
 
     def _handle_message(self, msg: bytes) -> None:
+        """Dispatch message to registered handler based on method and send response."""
         method, content = rpc.decode_message(msg)
         log.info("Received message with method: %s", method)
         log.debug("msg=%s", msg)
