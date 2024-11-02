@@ -28,7 +28,7 @@ class LspApp:
         sys.stdout.buffer.write(msg)
         sys.stdout.flush()
 
-    def handle_message(self, msg: bytes) -> None:
+    def _handle_message(self, msg: bytes) -> None:
         method, content = rpc.decode_message(msg)
         log.info("Received message with method: %s", method)
         log.debug("msg=%s", msg)
@@ -42,7 +42,7 @@ class LspApp:
         stream = Stream(sys.stdin)
         try:
             for msg in stream.messages():
-                app.handle_message(msg)
+                app._handle_message(msg)
         except (SystemExit, InputStreamClosed):
             pass
         return 0
