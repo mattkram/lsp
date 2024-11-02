@@ -4,8 +4,7 @@ from typing import Callable
 from lsp import rpc, schema
 from lsp.logger import log
 from lsp.types import HandlerFunc, MethodName
-
-__all__ = ["handle_message"]
+from lsp.stream import Stream, InputStreamClosed
 
 
 class LspApp:
@@ -20,6 +19,33 @@ class LspApp:
             return f
 
         return decorator
+
+    @staticmethod
+    def _send_response(response: schema.Response) -> None:
+        """Send an encoded response back to the editor."""
+        msg = rpc.encode_message(response)
+        log.debug("msg=%s", msg)
+        sys.stdout.buffer.write(msg)
+        sys.stdout.flush()
+
+    def handle_message(self, msg: bytes) -> None:
+        method, content = rpc.decode_message(msg)
+        log.info("Received message with method: %s", method)
+        log.debug("msg=%s", msg)
+        handler = self._handlers.get(method, lambda _: None)
+        response = handler(content)
+        if response is not None:
+            self._send_response(response)
+
+    def run(self) -> int:
+        log.info("Starting up!")
+        stream = Stream(sys.stdin)
+        try:
+            for msg in stream.messages():
+                app.handle_message(msg)
+        except (SystemExit, InputStreamClosed):
+            pass
+        return 0
 
 
 app = LspApp()
@@ -50,21 +76,3 @@ def _handle_initialize(content: bytes) -> schema.InitializeResponse:
 def _handle_shutdown(content: bytes) -> None:
     log.info("Shutting down")
     raise SystemExit()
-
-
-def _send_response(response: schema.Response) -> None:
-    """Send an encoded response back to the editor."""
-    msg = rpc.encode_message(response)
-    log.debug("msg=%s", msg)
-    sys.stdout.buffer.write(msg)
-    sys.stdout.flush()
-
-
-def handle_message(msg: bytes) -> None:
-    method, content = rpc.decode_message(msg)
-    log.info("Received message with method: %s", method)
-    log.debug("msg=%s", msg)
-    handler = app._handlers.get(method, lambda _: None)
-    response = handler(content)
-    if response is not None:
-        _send_response(response)
