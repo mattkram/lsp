@@ -9,18 +9,25 @@ __all__ = ["handle_message"]
 MethodName = str
 HandlerFunc = Callable[[bytes], schema.Response | None]
 
-_handlers: dict[MethodName, HandlerFunc] = {}
+
+class LspApp:
+    _handlers: dict[MethodName, HandlerFunc]
+
+    def __init__(self) -> None:
+        self._handlers = {}
+
+    def register(self, name: MethodName) -> Callable[[HandlerFunc], HandlerFunc]:
+        def decorator(f: HandlerFunc) -> HandlerFunc:
+            self._handlers[name] = f
+            return f
+
+        return decorator
 
 
-def register(name: MethodName) -> Callable[[HandlerFunc], HandlerFunc]:
-    def decorator(f: HandlerFunc) -> HandlerFunc:
-        _handlers[name] = f
-        return f
-
-    return decorator
+app = LspApp()
 
 
-@register("initialize")
+@app.register("initialize")
 def _handle_initialize(content: bytes) -> schema.InitializeResponse:
     request = schema.InitializeRequest.model_validate_json(content)
     if client_info := request.params.client_info:
@@ -41,7 +48,7 @@ def _handle_initialize(content: bytes) -> schema.InitializeResponse:
     )
 
 
-@register("shutdown")
+@app.register("shutdown")
 def _handle_shutdown(content: bytes) -> None:
     log.info("Shutting down")
     raise SystemExit()
@@ -59,7 +66,7 @@ def handle_message(msg: bytes) -> None:
     method, content = rpc.decode_message(msg)
     log.info("Received message with method: %s", method)
     log.debug("msg=%s", msg)
-    handler = _handlers.get(method, lambda _: None)
+    handler = app._handlers.get(method, lambda _: None)
     response = handler(content)
     if response is not None:
         _send_response(response)
