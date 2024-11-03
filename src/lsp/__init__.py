@@ -1,4 +1,4 @@
-from .app import main
+from lsp.__main__ import main
 
 
 __all__ = ["main"]
