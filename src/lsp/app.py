@@ -47,6 +47,9 @@ class DocumentState:
     def open_document(self, uri: DocumentPath, text: DocumentContents) -> None:
         self._state[uri] = text
 
+    def update_document(self, uri: DocumentPath, text: DocumentContents) -> None:
+        self._state[uri] = text
+
 
 class LspApp:
     def __init__(self) -> None:

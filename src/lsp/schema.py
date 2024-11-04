@@ -79,6 +79,27 @@ class DidOpenTextDocumentNotification(Notification):
     params: DidOpenTextDocumentParams
 
 
+class TextDocumentIdentifier(BaseModel):
+    uri: DocumentUri
+
+
+class VersionedTextDocumentIdentifier(TextDocumentIdentifier):
+    version: int
+
+
+class TextDocumentContentChangeEvent(BaseModel):
+    text: str
+
+
+class DidChangeTextDocumentParams(BaseModel):
+    text_document: VersionedTextDocumentIdentifier
+    content_changes: list[TextDocumentContentChangeEvent] = []
+
+
+class DidChangeTextDocument(Notification):
+    params: DidChangeTextDocumentParams
+
+
 class ServerCapabilities(BaseModel):
     text_document_sync: TextDocumentSyncKind = TextDocumentSyncKind.NONE
 

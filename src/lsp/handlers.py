@@ -39,6 +39,19 @@ def _handle_text_document_did_open(app: LspApp, content: bytes) -> None:
     log.info("Received text: %s", request.params.text_document.text)
 
 
+@registry.register("textDocument/didChange")
+def _handle_text_document_did_change(app: LspApp, content: bytes) -> None:
+    request = schema.DidChangeTextDocument.model_validate_json(content)
+    log.info(
+        "Changed: %s, version %s",
+        request.params.text_document.uri,
+        request.params.text_document.version,
+    )
+
+    for change in request.params.content_changes:
+        app.state.update_document(request.params.text_document.uri, change.text)
+
+
 @registry.register("shutdown")
 def _handle_shutdown(app: LspApp, content: bytes) -> None:
     log.info("Shutting down")
