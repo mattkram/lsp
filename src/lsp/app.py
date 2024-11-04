@@ -17,10 +17,16 @@ class HandlerRegistry:
         """Register a handler function for a given method."""
 
         def decorator(f: HandlerFunc) -> HandlerFunc:
-            self._handlers[name] = f
+            self.add(name, f)
             return f
 
         return decorator
+
+    def handlers(self) -> Iterator[tuple[MethodName, HandlerFunc]]:
+        yield from self._handlers.items()
+
+    def add(self, name: MethodName, func: HandlerFunc) -> None:
+        self._handlers[name] = func
 
     def get(self, name: MethodName) -> HandlerFunc:
         """Get a handler by name.
@@ -38,6 +44,10 @@ class LspApp:
 
     def register(self, name: MethodName) -> Callable[[HandlerFunc], HandlerFunc]:
         return self._registry.register(name)
+
+    def add_registry(self, registry: HandlerRegistry) -> None:
+        for name, handler_func in registry.handlers():
+            self._registry.add(name, handler_func)
 
     def _receive_messages(self) -> Iterator[bytes]:
         yield from self._input_stream.messages()

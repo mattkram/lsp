@@ -1,12 +1,12 @@
 from lsp import schema
-from lsp.app import LspApp
+from lsp.app import HandlerRegistry
 from lsp.logger import log
 
 
-app = LspApp()
+registry = HandlerRegistry()
 
 
-@app.register("initialize")
+@registry.register("initialize")
 def _handle_initialize(content: bytes) -> schema.InitializeResponse:
     request = schema.InitializeRequest.model_validate_json(content)
     if client_info := request.params.client_info:
@@ -27,7 +27,7 @@ def _handle_initialize(content: bytes) -> schema.InitializeResponse:
     )
 
 
-@app.register("shutdown")
+@registry.register("shutdown")
 def _handle_shutdown(content: bytes) -> None:
     log.info("Shutting down")
     raise SystemExit()
