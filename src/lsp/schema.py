@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import Any
 
 from pydantic import BaseModel as _BaseModel, ConfigDict
@@ -54,7 +55,32 @@ class InitializeRequest(Request):
     params: InitializeRequestParams
 
 
-class ServerCapabilities(BaseModel): ...
+class TextDocumentSyncKind(Enum):
+    NONE: int = 0
+    FULL: int = 1
+    INCREMENTAL: int = 2
+
+
+DocumentUri = str
+
+
+class TextDocumentItem(BaseModel):
+    uri: DocumentUri
+    language_id: str
+    version: int
+    text: str
+
+
+class DidOpenTextDocumentParams(BaseModel):
+    text_document: TextDocumentItem
+
+
+class DidOpenTextDocumentNotification(Notification):
+    params: DidOpenTextDocumentParams
+
+
+class ServerCapabilities(BaseModel):
+    text_document_sync: TextDocumentSyncKind = TextDocumentSyncKind.NONE
 
 
 class ServerInfo(BaseModel):

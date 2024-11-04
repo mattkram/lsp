@@ -18,13 +18,22 @@ def _handle_initialize(content: bytes) -> schema.InitializeResponse:
     return schema.InitializeResponse(
         id=request.id,
         result=schema.InitializeResult(
-            capabilities=schema.ServerCapabilities(),
+            capabilities=schema.ServerCapabilities(
+                text_document_sync=schema.TextDocumentSyncKind.FULL,
+            ),
             server_info=schema.ServerInfo(
                 name="kramer-lsp",
                 version="0.0.0.0.0.alpha1",
             ),
         ),
     )
+
+
+@registry.register("textDocument/didOpen")
+def _handle_text_document_did_open(content: bytes) -> None:
+    request = schema.DidOpenTextDocumentNotification.model_validate_json(content)
+    log.info("Opened: %s", request.params.text_document.uri)
+    log.info("Received text: %s", request.params.text_document.text)
 
 
 @registry.register("shutdown")
