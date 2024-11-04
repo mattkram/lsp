@@ -100,8 +100,34 @@ class DidChangeTextDocument(Notification):
     params: DidChangeTextDocumentParams
 
 
+class Position(BaseModel):
+    line: int
+    character: int
+
+
+class TextDocumentPositionParams(BaseModel):
+    text_document: TextDocumentIdentifier
+    position: Position
+
+
+class HoverParams(TextDocumentPositionParams): ...
+
+
+class HoverRequest(Request):
+    params: HoverParams
+
+
+class HoverResult(BaseModel):
+    contents: str
+
+
+class HoverResponse(Response):
+    result: HoverResult
+
+
 class ServerCapabilities(BaseModel):
     text_document_sync: TextDocumentSyncKind = TextDocumentSyncKind.NONE
+    hover_provider: bool = False
 
 
 class ServerInfo(BaseModel):

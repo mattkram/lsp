@@ -20,6 +20,7 @@ def _handle_initialize(app: LspApp, content: bytes) -> schema.InitializeResponse
         result=schema.InitializeResult(
             capabilities=schema.ServerCapabilities(
                 text_document_sync=schema.TextDocumentSyncKind.FULL,
+                hover_provider=True,
             ),
             server_info=schema.ServerInfo(
                 name="kramer-lsp",
@@ -50,6 +51,17 @@ def _handle_text_document_did_change(app: LspApp, content: bytes) -> None:
 
     for change in request.params.content_changes:
         app.state.update_document(request.params.text_document.uri, change.text)
+
+
+@registry.register("textDocument/hover")
+def _handle_hover(app: LspApp, content: bytes) -> schema.InitializeResponse:
+    request = schema.HoverRequest.model_validate_json(content)
+    return schema.HoverResponse(
+        id=request.id,
+        result=schema.HoverResult(
+            contents="Hey dude!",
+        ),
+    )
 
 
 @registry.register("shutdown")
