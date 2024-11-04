@@ -1,5 +1,5 @@
 from lsp import schema
-from lsp.app import HandlerRegistry
+from lsp.app import HandlerRegistry, LspApp
 from lsp.logger import log
 
 
@@ -7,7 +7,7 @@ registry = HandlerRegistry()
 
 
 @registry.register("initialize")
-def _handle_initialize(content: bytes) -> schema.InitializeResponse:
+def _handle_initialize(app: LspApp, content: bytes) -> schema.InitializeResponse:
     request = schema.InitializeRequest.model_validate_json(content)
     if client_info := request.params.client_info:
         log.info(
@@ -30,13 +30,16 @@ def _handle_initialize(content: bytes) -> schema.InitializeResponse:
 
 
 @registry.register("textDocument/didOpen")
-def _handle_text_document_did_open(content: bytes) -> None:
+def _handle_text_document_did_open(app: LspApp, content: bytes) -> None:
     request = schema.DidOpenTextDocumentNotification.model_validate_json(content)
+    app.state.open_document(
+        request.params.text_document.uri, request.params.text_document.text
+    )
     log.info("Opened: %s", request.params.text_document.uri)
     log.info("Received text: %s", request.params.text_document.text)
 
 
 @registry.register("shutdown")
-def _handle_shutdown(content: bytes) -> None:
+def _handle_shutdown(app: LspApp, content: bytes) -> None:
     log.info("Shutting down")
     raise SystemExit()
